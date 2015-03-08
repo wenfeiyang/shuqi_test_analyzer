@@ -21,13 +21,36 @@ schema = {
         'type': 'string',
         'minlength': 1,
         'maxlength': 50,
-        #'required': True,
-        #'unique': True,
+    },
+
+    'appium_version': {
+        'type': 'string',
+        'maxlength': 50,
+
+    },
+
+    'app_version': {
+        'type': 'string',
+        'maxlength': 50,
+    },
+
+    'ditch_info': {
+        'type':  'string',
+        'maxlength': 100,
+    },
+
+    'test_id': {
+        'type': 'integer',
     },
 
     'test_name': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 200,
+    },
+
+    'test_description': {
     	'type': 'string',
-    	'minlength': 1,
         'maxlength': 200,
     },
 
@@ -35,6 +58,11 @@ schema = {
     	'type': 'integer',
     	'allowed': [0, 1, 2, 3]
     },
+
+    'msg': {
+        'type': 'string',
+        'maxlength': 2000,
+    }
 }
 
 test_result = {

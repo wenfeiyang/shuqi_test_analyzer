@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["table"]});
+      google.setOnLoadCallback(drawTable);
+
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('number', 'Pass');
+        data.addColumn('number', 'Fail');
+        data.addColumn('number', 'Error');
+        data.addRows([
+          {% for test in result %}
+            ['{{result[test].name}}', {{result[test].pass}}, {{result[test].fail}}, {{result[test].error}}],
+          {% endfor %}
+            ['{{overall.name}}', {{overall.pass}}, {{overall.fail}}, {{overall.error}}]
+        ]);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+
+        table.draw(data, {showRowNumber: true});
+      }
+    </script>
+  </head>
+  <body>
+    <div id="table_div"></div>
+  </body>
+</html>
