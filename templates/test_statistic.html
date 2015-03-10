@@ -2,20 +2,66 @@
   <head>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
-      google.load("visualization", "1", {packages:["table"]});
-      google.setOnLoadCallback(drawTable);
+      google.load("visualization", "1", {packages:["corechart", "table"]});
+      google.setOnLoadCallback(drawCharts);
+
+      function drawCharts() {
+        drawPie()
+        drawTable()
+        drawColumnChart()
+      }
+
+      function drawColumnChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'name');
+        data.addColumn('number', 'Pass');
+        data.addColumn('number', 'Fail');
+        data.addColumn('number', 'Error');
+        {% for id in result %}
+        data.addRow(
+            ['{{result[id].description}}', {{result[id].pass}}, {{result[id].fail}}, {{result[id].error}}]
+        );
+        {% endfor %}
+
+        var options = {
+          title: "Detailed result per TC ({{device}})",
+          legend: { position: "none" },
+          isStacked: true
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById("detail_div"));
+        chart.draw(data, options);
+      }
+
+      function drawPie() {
+        var data = google.visualization.arrayToDataTable([
+          ['Catalog', 'Count'],
+          ['pass',     {{overall.pass}}],
+          ['fail',     {{overall.fail}}],
+          ['error',    {{overall.error}}]
+        ]);
+
+        var options = {
+          title: 'Overall result ({{device}})'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('overall_div'));
+
+        chart.draw(data, options);
+      }
 
       function drawTable() {
+
         var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Name');
+        data.addColumn('string', 'id');
+        data.addColumn('string', 'name');
         data.addColumn('number', 'Pass');
         data.addColumn('number', 'Fail');
         data.addColumn('number', 'Error');
         data.addRows([
-          {% for test in result %}
-            ['{{result[test].name}}', {{result[test].pass}}, {{result[test].fail}}, {{result[test].error}}],
+          {% for id in result %}
+            ['{{id}}', '{{result[id].description}}', {{result[id].pass}}, {{result[id].fail}}, {{result[id].error}}],
           {% endfor %}
-            ['{{overall.name}}', {{overall.pass}}, {{overall.fail}}, {{overall.error}}]
+            ['', '{{overall.description}}', {{overall.pass}}, {{overall.fail}}, {{overall.error}}]
         ]);
 
         var table = new google.visualization.Table(document.getElementById('table_div'));
@@ -23,8 +69,20 @@
         table.draw(data, {showRowNumber: true});
       }
     </script>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <title>Appium自动化用例结果统计</title>
   </head>
   <body>
-    <div id="table_div"></div>
+    <h1>Appium自动化用例结果统计</h1>
+    <p>
+      device: {{device}} <br/>
+      app_version: {{version}} <br/>
+      appium_version: 1.3.5
+    </p>
+    <div id="overall_div" style="width: 600px; height: 400px;"></div>
+    <div id="detail_div" style="width: 700px; height: 400px;"></div>
+    <div id="table_div" style="width: 900px; height: 500px;"></div>
   </body>
 </html>
